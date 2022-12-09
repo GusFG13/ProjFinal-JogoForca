@@ -3,6 +3,7 @@
     using Utils.Validacoes;
     using Utils.Graficos;
     using JogoForca4.Exceptions;
+    using System.IO;
 
     internal class Program
     {
@@ -38,20 +39,6 @@
             #region declaração de variáveis
             string equipe = "Grupo 8";
             string[] programadores = { "Danielle Rodrigues", "Gustavo Fabiano Gonçalves", "Leandro Aparecido de Paiva" };
-            //matriz com base de dados de dicas e palavras
-            //categoria estará na linha índice 0; cada coluna terá 10 palavras referentes a cada dica
-            string[,] matrizDePalavras = new string[11, 5] {
-                                            {"animal","país","cidade do Brasil","nome feminino","nome masculino"},
-                                            {"andorinha","Argentina","Caraguatatuba","Alice","Augusto"},
-                                            {"borboleta","Dinamarca","Fortaleza","Clarice","Bernardo"},
-                                            {"camundongo","Espanha","Guarulhos","Giovanna","Eduardo"},
-                                            {"escaravelho","Filipinas","Itaquaquecetuba","Helena","Francisco"},
-                                            {"formiga","Honduras","Londrina","Isabella","Guilherme"},
-                                            {"gafanhoto","Jamaica","Pindamonhangaba","Laura","Henrique"},
-                                            {"joaninha","Luxemburgo","Piracicaba","Manuela","Joaquim"},
-                                            {"lagartixa","Marrocos","Salvador","Marina","Leonardo"},
-                                            {"ornitorrinco","Noruega","Sorocaba","Sophia","Matheus"},
-                                            {"rinoceronte","Paraguai","Teresina","Valentina","Miguel"}};
 
             Random numAleat = new Random(); // gera número aleatório para escolher a palavra na matriz
             bool novaPartida = false; // variável de saída do do-while que controla novas partidas
@@ -82,8 +69,33 @@
             const int vezesJogadas = 0; // índice para vetor no dicionário para posição que guarda total de vezes que a palavra foi jogada
             const int vezesAcertou = 1; // índice para vetor no dicionário para posição que guarda total de vezes que jogador acertou aquela palavra
             const int tamanhoPalavra = 2; // índice para vetor no dicionário
-            #endregion
             
+            //lista de palavras está no arquivo ListaPalavras.csv, que deverá estar na mesma pasta do arquivo .exe
+            //o arquivo deve ter a primeira linha com as categorias, separadas por vírgula e nas linhas seguintes, as palavras naquelas categorias.
+            //todas as "colunas" do arquivo devem ter o mesmo número de palavras
+            string Caminho = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ListaPalavras.csv";
+
+            try {
+                FileStream fs = File.Open(Caminho,FileMode.Open);
+                fs.Close();
+            } catch(Exception ex)
+            {
+                Console.WriteLine("Houve um erro na leitura do arquivo ListaPalavras.csv\n\n");
+                Console.WriteLine(ex.Message);
+                Environment.Exit(0);
+            }
+            string[] LinhasCSV = File.ReadAllLines(Caminho);
+            //vetor de vetores com base de dados de dicas e palavras
+            //categoria estará na linha índice 0; cada "coluna" terá 10 palavras referentes a cada dica
+            string[][] matrizDePalavrasCSV = new string[LinhasCSV.Length][]; //cria um array onde cada elemento também é um array
+
+            #endregion
+
+            for (int i = 0; i < LinhasCSV.Length; i++)
+            {
+                matrizDePalavrasCSV[i] = LinhasCSV[i].Split(',');
+            }
+ 
             MGraficos.ExibirAnimacao("inicio"); // chama função definida abaixo que exibe uma vinheta de abertura
 
             // imprime o nome da equipe
@@ -103,14 +115,14 @@
                 //preparação para nova partida
                 ganhou = perdeu = false;
                 totalJogos++;
-                //linha = numAleat.Next(1, matrizDePalavras.GetLength(0));  // gera um número entre 1 e tamanho do primeiro índice da matriz (linha 0 é só dicas)
-                //coluna = numAleat.Next(0, matrizDePalavras.GetLength(1)); // gera um número entre 0 e tamanho do segundo índice da matriz
+                linha = numAleat.Next(1, matrizDePalavrasCSV.Length);  // gera um número entre 1 e tamanho do primeiro índice da matriz (linha 0 é só dicas)
+                coluna = numAleat.Next(0, matrizDePalavrasCSV[linha].Length); // gera um número entre 0 e tamanho do segundo índice da matriz
                 /********************************* TESTES ************************************/
-                linha = numAleat.Next(1, 4);  // gera um número entre 1 e tamanho do primeiro índice da matriz (linha 0 é só dicas)
-                coluna = numAleat.Next(0, 2); // gera um número entre 0 e tamanho do segundo índice da matriz
+                //linha = numAleat.Next(1, 4);  // gera um número entre 1 e tamanho do primeiro índice da matriz (linha 0 é só dicas)
+                //coluna = numAleat.Next(0, 2); // gera um número entre 0 e tamanho do segundo índice da matriz
                 /*****************************************************************************/
-                dica = matrizDePalavras[0, coluna];
-                palavra = matrizDePalavras[linha, coluna].ToLower();
+                dica = matrizDePalavrasCSV[0][coluna];
+                palavra = matrizDePalavrasCSV[linha][coluna].ToLower();
                 letrasUsadas = "";
                 palavraOculta = string.Concat(Enumerable.Repeat("_ ", palavra.Length));
                 erros = 0;
