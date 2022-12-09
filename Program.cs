@@ -73,11 +73,13 @@
             //todas as "colunas" do arquivo devem ter o mesmo número de palavras
             string Caminho = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ListaPalavras.csv";
 
-            try {
+            try 
+            {
                 // tenta abrir arquivo. Bloco não necesário para o código, usado apenas como forma de "forçar" um erro na apresentação
                 FileStream fs = File.Open(Caminho,FileMode.Open);
                 fs.Close();
-            } catch(Exception ex)
+            } 
+            catch(Exception ex)
             {
                 throw new MeuErro(ex.Message);
             }
