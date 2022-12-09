@@ -37,10 +37,7 @@
         static void Main(string[] args)
         {
             #region declaração de variáveis
-            string equipe = "Grupo 8";
-            string[] programadores = { "Danielle Rodrigues", "Gustavo Fabiano Gonçalves", "Leandro Aparecido de Paiva" };
-
-            Random numAleat = new Random(); // gera número aleatório para escolher a palavra na matriz
+            
             bool novaPartida = false; // variável de saída do do-while que controla novas partidas
             bool ganhou; // true quando ganhou, inicializada com false no começo de cada partida
             bool perdeu; // true quando perdeu, inicializada com false no começo de cada partida
@@ -54,8 +51,8 @@
             int numVitorias = 0; // contador de palavras descobertas
             int numLetras = 0; // contador do número de letras da palavra-chave
 
-            string dica; // guarda a categoria da palavra-chave, determinada por matrizDePalavras[0,coluna]
-            string palavra; // guarda a palavra-chave determinada por matrizDePalavras[linha,coluna]
+            string dica; // guarda a categoria da palavra-chave, determinada por matrizDePalavrasCSV[0][coluna]
+            string palavra; // guarda a palavra-chave determinada por matrizDePalavrasCSV[linha][coluna]
             string letra; // palpite do jogador
             string letrasUsadas; // guarda todas as letras já usadas na partida
             string palavraOculta; // string composta por "_ " para cada letra da palavra-chave, conforme o jogador acerta um palpite, cada "_" é substituído pela letra informada
@@ -64,6 +61,7 @@
             string maiorPalavra = ""; // guarda a maior palavra que o jogador acertou, em caso de empate, fica a última delas
             string resposta; // recebe s ou n para a pergunta se o jogador quer nova partida
 
+            Random numAleat = new Random(); // gera número aleatório para escolher a palavra na matriz
             DateTime inicio = DateTime.Now; // guarda hora de início da partida. Método Stopwatch stopwatch = Stopwatch.StartNew(); seria outra forma para marcar tempo
             Dictionary<string, ushort[]> dicPalavrasJogou = new Dictionary<string, ushort[]>();//chave: palavra que acertou; Valor: array com 3 posições {Vezes jogadas, vezes acertou, tamanho palavra}
             const int vezesJogadas = 0; // índice para vetor no dicionário para posição que guarda total de vezes que a palavra foi jogada
@@ -76,13 +74,12 @@
             string Caminho = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ListaPalavras.csv";
 
             try {
+                // tenta abrir arquivo. Bloco não necesário para o código, usado apenas como forma de "forçar" um erro na apresentação
                 FileStream fs = File.Open(Caminho,FileMode.Open);
                 fs.Close();
             } catch(Exception ex)
             {
-                Console.WriteLine("Houve um erro na leitura do arquivo ListaPalavras.csv\n\n");
-                Console.WriteLine(ex.Message);
-                Environment.Exit(0);
+                throw new MeuErro(ex.Message);
             }
             string[] LinhasCSV = File.ReadAllLines(Caminho);
             //vetor de vetores com base de dados de dicas e palavras
@@ -91,6 +88,7 @@
 
             #endregion
 
+            // atribui vetores de palavras (colunas) para cada elemento da matrizDePalavrasCSV (linhas)
             for (int i = 0; i < LinhasCSV.Length; i++)
             {
                 matrizDePalavrasCSV[i] = LinhasCSV[i].Split(',');
@@ -99,13 +97,7 @@
             MGraficos.ExibirAnimacao("inicio"); // chama função definida abaixo que exibe uma vinheta de abertura
 
             // imprime o nome da equipe
-            Console.WriteLine($"\n\n\n Criado por: {equipe}");
-            foreach (string prog in programadores)
-            {
-                Thread.Sleep(500); // aguarda por 500 milissegundos
-                Console.WriteLine($"  - {prog}");
-            }
-            Thread.Sleep(500);
+            MGraficos.ImprimirEquipe();
             Console.WriteLine("\n Pressione qualquer tecla para continuar...");
             Console.ReadKey(true); //aguarda até o jogador pressionar alguma tecla; true indica que a tecla não aparecerá no console
 
@@ -146,17 +138,9 @@
                     letrasUsadas = letrasUsadas + letra + " "; // acrescenta nova letra na lista de usadas
 
                     //procurar letra na palavra-chave
-                    posLetra = palavra.IndexOf(letra);
-                    if (posLetra == -1) //letra não encontrada na palavra
+                    if (MValidacoes.VerificarSeLetraExiste(letra, palavra)) //true - letra encontrada na palavra
                     {
-                        erros++;
-                        Console.Clear();
-                        MGraficos.ExibirMensagem(erros);
-                        Console.WriteLine($"\n Pressione qualquer tecla para continuar...");
-                        Console.ReadKey(true); 
-                    }
-                    else //letra encontrda
-                    {
+                        posLetra = palavra.IndexOf(letra); // posição da primeira ocorrência
                         while (posLetra != -1) // substitui todas a ocorrências da letra em palavra-chave nas respectivas posições da variável palavraOculta
                         {
                             /*
@@ -169,15 +153,19 @@
                             posLetra = palavra.IndexOf(letra, posLetra);
                         }
                     }
+                    else //false - letra não encontrda
+                    {
+                        erros++;
+                        Console.Clear();
+                        MGraficos.ExibirMensagem(erros);
+                        Console.WriteLine($"\n Pressione qualquer tecla para continuar...");
+                        Console.ReadKey(true);
+                    }
                     //verifica se as condições de vitória ou derrota foram atingidas
-                    if (erros == 6)
-                    {
-                        perdeu = true;
-                    }
-                    if (palavraOculta.IndexOf("_") == -1) //caso não encontre mais underlines em palavraOculta, jogador adivinhou palavra
-                    {
-                        ganhou = true;
-                    }
+
+                    perdeu = MValidacoes.VerificarSePerdeu(erros);
+                    ganhou = MValidacoes.VerificarSeGanhou(palavraOculta);
+
                     #endregion
                 } while (!ganhou && !perdeu); // continua enquanto ganhou e perdeu forem false
 
@@ -218,7 +206,7 @@
                     {
                         MGraficos.ExibirMensagem("parabens", true);
                     }
-                    if (perdeu) // revela a palavra-chave, apenas caso jogador não tenha adivinhado
+                    else if (perdeu) // revela a palavra-chave, apenas caso jogador não tenha adivinhado
                     {
                         revelaPalavra = $"! A palavra era: {palavra.ToUpper()} !";
                         MGraficos.ExibirMensagem(revelaPalavra, '*');
@@ -289,18 +277,9 @@
                 }
             }
             Thread.Sleep(250);
-            try 
-            {
-                //throw new Exception();
-                MGraficos.ExibirMensagem("obrigado", true);
-                Console.WriteLine($"\n Pressione qualquer tecla para encerrar...");
-                Console.ReadKey(true);
-            } 
-            catch(Exception ex)
-            {
-                throw new MeuErro(ex.Message);
-                //Console.WriteLine("erro");
-            }
+            MGraficos.ExibirMensagem("obrigado", true);
+            Console.WriteLine($"\n Pressione qualquer tecla para encerrar...");
+            Console.ReadKey(true);
             #endregion
         }//Fim Main
     }

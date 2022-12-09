@@ -179,5 +179,19 @@ namespace JogoForca4.Utils.Graficos
                     break;
             }
         }//fim void ExibirMensagem
+
+        public static void ImprimirEquipe()
+        {
+            string equipe = "Grupo 8";
+            string[] programadores = { "Danielle Rodrigues", "Gustavo Fabiano Gonçalves", "Leandro Aparecido de Paiva" };
+
+            Console.WriteLine($"\n\n\n Criado por: {equipe}");
+            foreach (string prog in programadores)
+            {
+                Thread.Sleep(500); // aguarda por 500 milissegundos
+                Console.WriteLine($"  - {prog}");
+            }
+            Thread.Sleep(500);
+        }
     }
 }

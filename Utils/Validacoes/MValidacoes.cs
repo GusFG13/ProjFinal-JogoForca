@@ -48,5 +48,32 @@ namespace JogoForca4.Utils.Validacoes
                 }
             }
         }//fim EhLetraValida
+
+        public static bool VerificarSeLetraExiste(string letra, string palavra)
+        {
+            if (palavra.IndexOf(letra) == -1) //letra não existe
+            {
+                return false;
+            }
+            return true;
+        } //fim VerificarSeLetraExiste
+
+        public static bool VerificarSePerdeu(int totalErros)
+        {
+            if (totalErros == 6)
+            {
+                return true; //perdeu
+            }
+            return false;
+        }//fim VerificarSePerdeu
+
+        public static bool VerificarSeGanhou(string palavraChaveOculta)
+        {
+            if (palavraChaveOculta.IndexOf("_") == -1) //caso não encontre mais underlines em palavraOculta, jogador adivinhou palavra
+            {
+                return true; //ganhou
+            }
+            return false;
+        }//fim VerificarSeGanhou
     }
 }
