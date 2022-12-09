@@ -15,9 +15,6 @@ namespace JogoForca4.Utils.Validacoes
             if (verLetra.Length != 1) // testa se informaou apenas uma letra
             {
                 Console.Clear();
-                //Console.WriteLine("\n\n ****************************************************");
-                //Console.WriteLine(" * Digite apenas uma letra entre a e z (sem acento) *");
-                //Console.WriteLine(" ****************************************************");
                 MGraficos.ExibirMensagem("invalido", true);
                 Console.WriteLine($"\n Pressione qualquer tecla para continuar...");
                 Console.ReadKey(true);
@@ -34,10 +31,7 @@ namespace JogoForca4.Utils.Validacoes
                     }
                     else
                     {
-                        Console.Clear();
-                        //Console.WriteLine("\n\n *********************************");
-                        //Console.WriteLine(" * Letra escolhida já foi usada! *");
-                        //Console.WriteLine(" *********************************");
+                        Console.Clear();                     
                         MGraficos.ExibirMensagem("usada", true);
                         Console.WriteLine($"\n Pressione qualquer tecla para continuar...");
                         Console.ReadKey(true);
@@ -47,9 +41,6 @@ namespace JogoForca4.Utils.Validacoes
                 else // caso caractere digitado não esteja entre a e z
                 {
                     Console.Clear();
-                    //Console.WriteLine("\n\n ****************************************************");
-                    //Console.WriteLine(" * Digite apenas uma letra entre a e z (sem acento) *");
-                    //Console.WriteLine(" ****************************************************");
                     MGraficos.ExibirMensagem("invalido", true);
                     Console.WriteLine($"\n Pressione qualquer tecla para continuar...");
                     Console.ReadKey(true);

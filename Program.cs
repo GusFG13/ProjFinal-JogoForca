@@ -58,6 +58,7 @@
             bool ganhou; // true quando ganhou, inicializada com false no começo de cada partida
             bool perdeu; // true quando perdeu, inicializada com false no começo de cada partida
             bool empateCompr; // true quando mais de uma palavra correta tem o mesmo comprimento
+
             int linha; // guarda número aleatório para a linha da matriz (entre 1 e 11, na linha 0 estão as categorias)
             int coluna; // guarda número aleatório para a coluna da matriz (decide a categoria da palavra sorteada)
             int erros; // guarda total de erros numa partida, com 6 o jogador perde. Inicializada no começo de cada partida
@@ -65,6 +66,7 @@
             int totalJogos = 0; // contador do número de partidas jogadas
             int numVitorias = 0; // contador de palavras descobertas
             int numLetras = 0; // contador do número de letras da palavra-chave
+
             string dica; // guarda a categoria da palavra-chave, determinada por matrizDePalavras[0,coluna]
             string palavra; // guarda a palavra-chave determinada por matrizDePalavras[linha,coluna]
             string letra; // palpite do jogador
@@ -72,13 +74,10 @@
             string palavraOculta; // string composta por "_ " para cada letra da palavra-chave, conforme o jogador acerta um palpite, cada "_" é substituído pela letra informada
             string mensagemInicial; // frase que informa ao jogador qual a dica e o número de letras da palavra-chave, inicializada no começo de cada partida
             string revelaPalavra; // frase que revela a palavra-chave quando o jogador perde a partida, inicializada apenas se o jogador perder alguma vez
-            string auxMoldura; // auxiliar para cria uma moldura no texto apresentado ao jogador, formada por - ou *, dependendo da mensagem
-            //string palavrasJogadas = ""; // guarda todas as palavras jogadas, com a última partida em primeiro
-            //string palavrasAcertou = ""; // guarda todas as palavras que o jogador acertou, com a última em primeiro
             string maiorPalavra = ""; // guarda a maior palavra que o jogador acertou, em caso de empate, fica a última delas
             string resposta; // recebe s ou n para a pergunta se o jogador quer nova partida
-            DateTime inicio = DateTime.Now; // guarda hora de início da partida
-            //Stopwatch stopwatch = Stopwatch.StartNew(); //outra forma para marcar tempo
+
+            DateTime inicio = DateTime.Now; // guarda hora de início da partida. Método Stopwatch stopwatch = Stopwatch.StartNew(); seria outra forma para marcar tempo
             Dictionary<string, ushort[]> dicPalavrasJogou = new Dictionary<string, ushort[]>();//chave: palavra que acertou; Valor: array com 3 posições {Vezes jogadas, vezes acertou, tamanho palavra}
             const int vezesJogadas = 0; // índice para vetor no dicionário para posição que guarda total de vezes que a palavra foi jogada
             const int vezesAcertou = 1; // índice para vetor no dicionário para posição que guarda total de vezes que jogador acertou aquela palavra
@@ -106,38 +105,17 @@
                 totalJogos++;
                 //linha = numAleat.Next(1, matrizDePalavras.GetLength(0));  // gera um número entre 1 e tamanho do primeiro índice da matriz (linha 0 é só dicas)
                 //coluna = numAleat.Next(0, matrizDePalavras.GetLength(1)); // gera um número entre 0 e tamanho do segundo índice da matriz
-                // Next retorna um inteiro que seja >= minValue e < MaxValue
-                // ******************************* TESTES ************************************
+                /********************************* TESTES ************************************/
                 linha = numAleat.Next(1, 4);  // gera um número entre 1 e tamanho do primeiro índice da matriz (linha 0 é só dicas)
                 coluna = numAleat.Next(0, 2); // gera um número entre 0 e tamanho do segundo índice da matriz
-                //linha = 1;
-                //coluna = 0;
-                //Console.WriteLine($"Linha = {linha}; Coluna = {coluna}");
-                //Console.WriteLine($"Dica = {matrizDePalavras[0, coluna]}");
-                //Console.WriteLine($"Palavra = {matrizDePalavras[linha, coluna]}");
-                // **************************************************************************
+                /*****************************************************************************/
                 dica = matrizDePalavras[0, coluna];
                 palavra = matrizDePalavras[linha, coluna].ToLower();
                 letrasUsadas = "";
                 palavraOculta = string.Concat(Enumerable.Repeat("_ ", palavra.Length));
-                //palavraOculta = "";
-                //for (int i = 0; i < palavra.Length; i++)
-                //{
-                //    palavraOculta += "_ ";
-                //}
                 erros = 0;
-                //palavrasJogadas = palavra + "; " + palavrasJogadas;
-                Console.Clear();
-                //auxMoldura = "";
+                Console.Clear();  
                 mensagemInicial = $"| A palavra é um(a) {dica} e tem {palavra.Length} letras. |";
-                //for (int i = 0; i < (mensagemInicial.Length - 2); i++ ) {
-                //    auxMoldura = auxMoldura + "-";
-                //};
-                //auxMoldura = new string('-', (mensagemInicial.Length - 2));
-                //auxMoldura = "+" + auxMoldura + "+";
-                //Console.WriteLine($"\n\n {auxMoldura}");
-                //Console.WriteLine($" {mensagemInicial}");
-                //Console.WriteLine($" {auxMoldura}");
                 MGraficos.ExibirMensagem(mensagemInicial);
                 Console.WriteLine("\n Pressione qualquer tecla para continuar...");
                 Console.ReadKey(true);
@@ -156,20 +134,14 @@
                     letrasUsadas = letrasUsadas + letra + " "; // acrescenta nova letra na lista de usadas
 
                     //procurar letra na palavra-chave
-
                     posLetra = palavra.IndexOf(letra);
                     if (posLetra == -1) //letra não encontrada na palavra
                     {
                         erros++;
                         Console.Clear();
-                        //Console.WriteLine("\n\n ************************************************");
-                        //Console.WriteLine(" ! A letra digitada não existe na palavra-chave !");
-                        //Console.WriteLine($" ! Você errou {erros} {(erros > 1 ? "vezes!" : "vez!  ")}                          !");
-                        //Console.WriteLine(" ************************************************");
                         MGraficos.ExibirMensagem(erros);
                         Console.WriteLine($"\n Pressione qualquer tecla para continuar...");
-                        Console.ReadKey(true);
-                        
+                        Console.ReadKey(true); 
                     }
                     else //letra encontrda
                     {
@@ -201,7 +173,6 @@
                 if (ganhou)
                 {
                     numVitorias++;
-                    //palavrasAcertou = palavra + "; " + palavrasAcertou;// acrescenta nova palavra na lista de vitórias
                     if (dicPalavrasJogou.ContainsKey(palavra)){
                         dicPalavrasJogou[palavra][vezesJogadas]++;
                         dicPalavrasJogou[palavra][vezesAcertou]++;
@@ -233,27 +204,13 @@
                     MGraficos.ExibirTelaJogo(erros, palavraOculta, dica, letrasUsadas);
                     if (ganhou)
                     {
-                        //Console.WriteLine($"\n\n *******************************************");
-                        //Console.WriteLine($" * PARABÉNS!!! Você adivinhou a palavra!!! *");
-                        //Console.WriteLine($" *******************************************");
                         MGraficos.ExibirMensagem("parabens", true);
                     }
                     if (perdeu) // revela a palavra-chave, apenas caso jogador não tenha adivinhado
                     {
-
-                        /**********************************************************************/
                         revelaPalavra = $"! A palavra era: {palavra.ToUpper()} !";
-                        //auxMoldura = new string('*', revelaPalavra.Length);
-                        //Console.WriteLine($"\n\n {auxMoldura}");
-                        //Console.WriteLine($" {revelaPalavra}");
-                        //Console.WriteLine($" {auxMoldura}");
                         MGraficos.ExibirMensagem(revelaPalavra, '*');
-                        /**********************************************************************/
-                        //Console.WriteLine($"\n\nA palavra era: {palavra.ToUpper()}");
                     }
-                    //Console.WriteLine("\n\n +----------------------------------+");
-                    //Console.WriteLine(" | Deseja jogar novamente (s ou n)? |");
-                    //Console.WriteLine(" +----------------------------------+");
                     MGraficos.ExibirMensagem("novamente", true);
                     resposta = Console.ReadLine().ToLower();
                     if (resposta == "s")
@@ -271,19 +228,15 @@
 
             #region finaliza jogo
             //Exibir estatísticas do jogo
-            //stopwatch.Stop(); // se usar o Stopwatch.StartNew()
-            //Console.WriteLine(stopwatch.ElapsedMilliseconds / 1000); 
             Console.Clear();
             Thread.Sleep(250);
             Console.WriteLine($"\n\n Você jogou {totalJogos} partida(s) em {(DateTime.Now - inicio).Minutes} minuto(s) e acertou {numVitorias} palavra(s) ({(numVitorias * 100.0d / totalJogos).ToString("0.##")}%).");
             Thread.Sleep(250);
             Console.WriteLine("\n As palavras que você jogou foram (No. vezes):");
             Thread.Sleep(250);
-            //Console.WriteLine(" " + palavrasJogadas);
             foreach ((string p, ushort[] stats) in dicPalavrasJogou)
             {
                 Console.Write($" {p} ({stats[vezesJogadas]})");
-                //Console.Write(" " + p + "()");
                 Thread.Sleep(250);
             }
             Console.Write("\n");
@@ -292,21 +245,11 @@
                 Thread.Sleep(250);
                 Console.WriteLine("\n As palavras que você acertou (No. vezes):");
                 Thread.Sleep(250);
-                //Console.WriteLine(" " + palavrasAcertou);
-                //foreach (string p in palavrasAcertou.Split("; ")) // verifica qual foi a maior palavra que o jogador acertou
-                //{
-                //    if (p.Length > numLetras)
-                //    {
-                //        numLetras = p.Length;
-                //        maiorPalavra = p;
-                //    }
-                //}
                 empateCompr = false; // reinicia para verificação em nova partida
                 foreach ((string p, ushort[] stats) in dicPalavrasJogou)
                 {
                     if (stats[vezesAcertou] > 0)
                     { 
-                        //Console.Write(" " + p);
                         Console.Write($" {p} ({stats[vezesAcertou]})");
                         Thread.Sleep(250);
                         if (stats[tamanhoPalavra] > numLetras)
@@ -323,7 +266,6 @@
                         }
                     }
                 }
-                //Thread.Sleep(250);
                 Console.Write("\n");
                 if (empateCompr)
                 {
@@ -333,12 +275,8 @@
                 {
                     Console.WriteLine($"\n A maior palavra que acertou foi {maiorPalavra}, com {numLetras} letras.");
                 }
-                //Console.WriteLine($"\n A maior palavra que acertou foi {maiorPalavra}, com {numLetras} letras.");
             }
             Thread.Sleep(250);
-            //Console.WriteLine("\n\n *************************");
-            //Console.WriteLine(" * Obrigado por jogar!!! *");
-            //Console.WriteLine(" *************************");
             try 
             {
                 //throw new Exception();
@@ -351,10 +289,7 @@
                 throw new MeuErro(ex.Message);
                 //Console.WriteLine("erro");
             }
-
             #endregion
         }//Fim Main
-
-
     }
 }
